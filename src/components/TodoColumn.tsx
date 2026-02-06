@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux'
 import { Box, Chip, Divider, Paper, Stack, Typography } from '@mui/material'
 import { type RootState, type TodoStatus } from '../store'
-import { TodoItem } from './TodoItem'
+import { TodoItem } from './TodoItem/TodoItem'
 
 interface TodoColumnProps {
   status: TodoStatus
