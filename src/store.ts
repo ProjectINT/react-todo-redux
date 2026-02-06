@@ -14,12 +14,14 @@ interface TodosState {
   items: Todo[]
   filter: TodoStatus | 'all'
   searchQuery: string
+  selectedStatuses: TodoStatus[]
 }
 
 const initialState: TodosState = {
   items: [],
   filter: 'all',
   searchQuery: '',
+  selectedStatuses: ['todo', 'in-progress', 'done'],
 }
 
 const todosSlice = createSlice({
@@ -61,6 +63,15 @@ const todosSlice = createSlice({
     setSearchQuery(state, action: PayloadAction<string>) {
       state.searchQuery = action.payload
     },
+    toggleStatusFilter(state, action: PayloadAction<TodoStatus>) {
+      const status = action.payload
+      const index = state.selectedStatuses.indexOf(status)
+      if (index > -1) {
+        state.selectedStatuses.splice(index, 1)
+      } else {
+        state.selectedStatuses.push(status)
+      }
+    },
   },
 })
 
@@ -77,6 +88,7 @@ export const {
   deleteTodo,
   setFilter,
   setSearchQuery,
+  toggleStatusFilter,
 } = todosSlice.actions
 
 export type RootState = ReturnType<typeof store.getState>
