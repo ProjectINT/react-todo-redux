@@ -1,4 +1,17 @@
-import { configureStore, createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { configureStore, createSlice, combineReducers, type PayloadAction } from '@reduxjs/toolkit'
+import { persistStore, persistReducer, type Storage } from 'redux-persist'
+
+const storage: Storage = {
+  getItem(key: string) {
+    return Promise.resolve(localStorage.getItem(key))
+  },
+  setItem(key: string, value: string) {
+    return Promise.resolve(localStorage.setItem(key, value))
+  },
+  removeItem(key: string) {
+    return Promise.resolve(localStorage.removeItem(key))
+  },
+}
 
 export type TodoStatus = 'todo' | 'in-progress' | 'done'
 
@@ -75,11 +88,28 @@ const todosSlice = createSlice({
   },
 })
 
-export const store = configureStore({
-  reducer: {
-    todos: todosSlice.reducer,
-  },
+const rootReducer = combineReducers({
+  todos: todosSlice.reducer,
 })
+
+const persistConfig = {
+  key: 'root',
+  storage,
+}
+
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+
+export const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+      },
+    }),
+})
+
+export const persistor = persistStore(store)
 
 export const {
   addTodo,
